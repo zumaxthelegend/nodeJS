@@ -1,7 +1,22 @@
-const http = require('http');
+const path = require('path');
 
-const routes = require('./routes')
+const express = require('express');
 
-const server = http.createServer(routes.handler);
+const adminRoutes = require('./routes/admin');
+const shopRoutes = require('./routes/shop')
 
-server.listen(3333);
+const bodyParser = require('body-parser');
+
+const app = express();
+
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.use('/admin', adminRoutes);
+app.use(shopRoutes);
+
+app.use('/', (req, res, next) => {
+    res.status(404).sendFile(path.join(__dirname, 'components', '404.html'));
+});
+
+app.listen(3333);
